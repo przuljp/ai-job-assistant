@@ -53,3 +53,68 @@ psycopg2-binary for Postgres access, Pydantic for validation, python-dotenv for 
 
 The database is Postgres, connected via `psycopg2`. Connection string lives in `backend/.env` as
 `DATABASE_URL` (gitignored) — never commit real credentials there.
+
+## Development Guidelines
+
+### General
+
+- Explain your reasoning before implementing significant changes.
+- Keep solutions simple unless additional complexity is justified.
+- Follow clean architecture principles.
+- Avoid overengineering.
+
+### FastAPI
+
+- Use APIRouter for every resource.
+- Keep routers thin.
+- Put business logic inside services.
+- Use dependency injection where appropriate.
+
+### SQLAlchemy
+
+- Use SQLAlchemy 2.0 syntax.
+- Use typed ORM models (`Mapped`, `mapped_column`).
+- Define relationships with `relationship()` and `back_populates`.
+- Never duplicate database logic.
+
+### Pydantic
+
+- Create separate schemas for:
+  - Create
+  - Update
+  - Response
+
+Never use one schema for everything.
+
+### API Design
+
+- Follow REST conventions.
+- Use proper HTTP status codes.
+- Validate all request data.
+- Return consistent response models.
+
+### Code Style
+
+- Use Python type hints everywhere.
+- Write readable code.
+- Prefer descriptive variable names.
+- Add docstrings only when they provide real value.
+
+### Teaching Mode
+
+This project is also for learning.
+
+Whenever implementing a feature:
+1. Explain why the chosen approach is recommended.
+2. Mention any important alternatives.
+3. Point out common beginner mistakes.
+4. Keep explanations concise.
+
+## Before making changes
+
+Before generating code:
+
+- Check the existing project structure.
+- Reuse existing code whenever possible.
+- Do not introduce new libraries unless necessary.
+- If a requested change affects architecture, explain the trade-offs first.
