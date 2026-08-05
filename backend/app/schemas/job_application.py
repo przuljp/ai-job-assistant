@@ -1,8 +1,14 @@
 from __future__ import annotations
 
 import datetime
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl
+
+# Mirrors the `status_check` CHECK constraint on job_applications.status in
+# the database. Keeping it here means an invalid status is rejected as a 422
+# at the API boundary instead of surfacing as a raw IntegrityError/500.
+JobApplicationStatus = Literal["Saved", "Applied", "Interview", "Rejected", "Accepted"]
 
 
 class JobApplicationCreate(BaseModel):
@@ -10,7 +16,7 @@ class JobApplicationCreate(BaseModel):
     position: str = Field(min_length=1, max_length=150)
     job_url: HttpUrl | None = None
     job_description: str | None = None
-    status: str = Field(min_length=1, max_length=20)
+    status: JobApplicationStatus
     application_date: datetime.date | None = None
     notes: str | None = None
 
@@ -20,7 +26,7 @@ class JobApplicationUpdate(BaseModel):
     position: str | None = Field(default=None, min_length=1, max_length=150)
     job_url: HttpUrl | None = None
     job_description: str | None = None
-    status: str | None = Field(default=None, min_length=1, max_length=20)
+    status: JobApplicationStatus | None = None
     application_date: datetime.date | None = None
     notes: str | None = None
 
@@ -34,7 +40,7 @@ class JobApplicationResponse(BaseModel):
     position: str
     job_url: str | None
     job_description: str | None
-    status: str
+    status: JobApplicationStatus
     application_date: datetime.date | None
     notes: str | None
     created_at: datetime.datetime
