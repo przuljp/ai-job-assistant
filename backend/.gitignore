@@ -32,6 +32,9 @@ htmlcov/
 dist/
 build/
 
+# User-uploaded files
+uploads/
+
 node_modules/
 frontend/node_modules/
 alembic/versions/__pycache__/

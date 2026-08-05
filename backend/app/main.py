@@ -1,11 +1,13 @@
 from fastapi import FastAPI
 
-from app.routers import job_application, user
+from app.routers import dashboard, job_application, resume, user
 
 app = FastAPI()
 
 app.include_router(user.router)
 app.include_router(job_application.router)
+app.include_router(resume.router)
+app.include_router(dashboard.router)
 
 
 @app.get("/")
