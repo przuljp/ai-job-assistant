@@ -23,3 +23,8 @@ class UserResponse(BaseModel):
     full_name: str
     email: EmailStr
     created_at: datetime.datetime
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str = "bearer"

@@ -30,6 +30,23 @@ def create_user(db: Session, user_data: UserCreate) -> User:
     return user
 
 
+def authenticate_user(db: Session, email: str, password: str) -> User | None:
+    """Verify login credentials.
+
+    Returns the matching User on success, or None if the email doesn't
+    exist or the password is wrong — deliberately the same return value for
+    both cases, so the router can't accidentally leak which one it was.
+    """
+    user = get_user_by_email(db, email)
+    if user is None:
+        return None
+
+    if not security.verify_password(password, user.password_hash):
+        return None
+
+    return user
+
+
 def get_user_by_id(db: Session, user_id: int) -> User | None:
     """Fetch a single user by primary key, or None if no such user exists."""
     return db.get(User, user_id)
