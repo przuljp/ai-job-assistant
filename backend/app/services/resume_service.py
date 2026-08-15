@@ -16,6 +16,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.models.resume import Resume
+from app.services import document_extraction_service
 
 # backend/uploads/resumes — resolved from this file's location rather than
 # the process's current working directory, so it's the same path whether
@@ -96,6 +97,23 @@ def get_resume_for_user(db: Session, resume_id: int, user_id: int) -> Resume | N
     """
     stmt = select(Resume).where(Resume.id == resume_id, Resume.user_id == user_id)
     return db.execute(stmt).scalar_one_or_none()
+
+
+def extract_resume_text_for_user(
+    db: Session, resume_id: int, user_id: int
+) -> str | None:
+    """Extract text only when the selected resume belongs to ``user_id``.
+
+    ``None`` deliberately represents both a missing resume and one owned by
+    another user, preserving the module's existing non-disclosing ownership
+    behavior. Expected file/PDF failures are raised by the document service.
+    """
+    resume = get_resume_for_user(db, resume_id, user_id)
+    if resume is None:
+        return None
+
+    file_path = UPLOAD_DIR / resume.file_url
+    return document_extraction_service.extract_pdf_text(file_path)
 
 
 def delete_resume(db: Session, resume_id: int, user_id: int) -> bool:
