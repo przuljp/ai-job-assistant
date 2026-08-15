@@ -25,8 +25,15 @@ class AIAnalysisResult(BaseModel):
     recommendations: list[NonEmptyString]
 
 
-class AIAnalysisResponse(AIAnalysisResult):
+class AIAnalysisSummaryResponse(BaseModel):
+    id: int
+    job_application_id: int
+    resume_id: int
+    match_score: int = Field(ge=0, le=100)
+    created_at: datetime.datetime
 
+
+class AIAnalysisResponse(AIAnalysisResult):
     id: int
     job_application_id: int
     resume_id: int

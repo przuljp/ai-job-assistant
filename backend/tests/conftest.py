@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Generator
+from datetime import datetime
 
 import pytest
 from fastapi.testclient import TestClient
@@ -9,6 +10,7 @@ from sqlalchemy.orm import Session
 from app.core.security import create_access_token
 from app.db.database import engine, get_db
 from app.main import app
+from app.models.ai_analysis import AIAnalysis
 from app.models.job_application import JobApplication
 from app.models.resume import Resume
 from app.models.user import User
@@ -135,3 +137,51 @@ def resume_b(db_session: Session, user_b: User) -> Resume:
     db_session.add(resume)
     db_session.flush()
     return resume
+
+
+@pytest.fixture
+def analysis_a(
+    db_session: Session,
+    application_a: JobApplication,
+    resume_a: Resume,
+) -> AIAnalysis:
+    analysis = AIAnalysis(
+        id=2_000_301,
+        job_application_id=application_a.id,
+        resume_id=resume_a.id,
+        match_score=82,
+        details={
+            "summary": "Strong backend profile with relevant technologies.",
+            "strengths": ["Python", "FastAPI", "PostgreSQL"],
+            "missing_skills": ["AWS", "Redis"],
+            "recommendations": ["Highlight FastAPI projects more clearly."],
+        },
+        created_at=datetime(2026, 8, 15, 10, 0, 0),
+    )
+    db_session.add(analysis)
+    db_session.flush()
+    return analysis
+
+
+@pytest.fixture
+def analysis_b(
+    db_session: Session,
+    application_b: JobApplication,
+    resume_b: Resume,
+) -> AIAnalysis:
+    analysis = AIAnalysis(
+        id=2_000_302,
+        job_application_id=application_b.id,
+        resume_id=resume_b.id,
+        match_score=61,
+        details={
+            "summary": "Partial platform engineering match.",
+            "strengths": ["Python"],
+            "missing_skills": ["Kubernetes"],
+            "recommendations": ["Add cloud infrastructure examples."],
+        },
+        created_at=datetime(2026, 8, 15, 11, 0, 0),
+    )
+    db_session.add(analysis)
+    db_session.flush()
+    return analysis

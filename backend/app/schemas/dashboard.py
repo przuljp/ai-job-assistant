@@ -15,6 +15,7 @@ class LatestApplication(BaseModel):
     position: str
     status: JobApplicationStatus
     application_date: datetime.date | None
+    created_at: datetime.datetime
 
 
 class DashboardResponse(BaseModel):
@@ -24,4 +25,6 @@ class DashboardResponse(BaseModel):
     interview_count: int
     accepted_count: int
     rejected_count: int
+    resume_count: int
+    analysis_count: int
     latest_applications: list[LatestApplication]
