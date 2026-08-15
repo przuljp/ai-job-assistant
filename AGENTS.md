@@ -42,6 +42,8 @@ Already implemented:
 - Job Application ownership enforcement
 - Resume upload and management
 - Resume ownership enforcement
+- PDF resume text extraction
+- Resume to Job Description AI analysis
 
 Job applications and resumes are always scoped to the authenticated user.
 
@@ -49,19 +51,17 @@ Cross-user access to protected resources should return `404 Not Found` rather th
 
 The frontend directory exists but frontend development has not started yet.
 
-AI functionality has not been implemented yet.
+The first AI analysis feature is implemented using OpenAI Structured Outputs.
 
 Upcoming major features include:
 
-1. Dashboard
-2. PDF resume text extraction
-3. AI Resume ↔ Job Description analysis
-4. AI resume improvement suggestions
-5. Cover letter generation
-6. Interview preparation
-7. React frontend
-8. Dockerization
-9. Deployment
+1. Dashboard enhancements
+2. AI resume improvement suggestions
+3. Cover letter generation
+4. Interview preparation
+5. React frontend
+6. Dockerization
+7. Deployment
 
 Before implementing any feature, inspect the existing repository because the source code is the ultimate source of truth and this document may not always reflect the latest implementation details.
 
@@ -81,6 +81,12 @@ Install dependencies:
 
 ```powershell
 pip install -r requirements.txt
+```
+
+Install development and test dependencies:
+
+```powershell
+pip install -r requirements-dev.txt
 ```
 
 Run the development server:
@@ -111,6 +117,19 @@ Create a migration after changing SQLAlchemy models:
 
 ```powershell
 alembic revision --autogenerate -m "describe the schema change"
+```
+
+AI resume analysis requires:
+
+```text
+OPENAI_API_KEY=<your API key>
+OPENAI_MODEL=gpt-5-mini  # optional; defaults to gpt-5-mini
+```
+
+Run the automated test suite:
+
+```powershell
+pytest
 ```
 
 When adding a new dependency, update `requirements.txt`.

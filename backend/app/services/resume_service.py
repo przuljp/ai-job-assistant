@@ -112,6 +112,11 @@ def extract_resume_text_for_user(
     if resume is None:
         return None
 
+    return extract_resume_text(resume)
+
+
+def extract_resume_text(resume: Resume) -> str:
+    """Extract text from resume metadata after ownership is established."""
     file_path = UPLOAD_DIR / resume.file_url
     return document_extraction_service.extract_pdf_text(file_path)
 
