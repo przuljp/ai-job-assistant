@@ -20,7 +20,9 @@ class User(Base):
     full_name: Mapped[str] = mapped_column(String(100))
     email: Mapped[str] = mapped_column(String(255), unique=True)
     password_hash: Mapped[str] = mapped_column(Text)
-    created_at: Mapped[datetime.datetime] = mapped_column(server_default=func.now())
+    created_at: Mapped[datetime.datetime | None] = mapped_column(
+        server_default=func.now()
+    )
 
     job_applications: Mapped[list["JobApplication"]] = relationship(
         back_populates="user"

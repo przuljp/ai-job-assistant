@@ -3,7 +3,7 @@ from __future__ import annotations
 import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Date, ForeignKey, String, Text, func
+from sqlalchemy import CheckConstraint, Date, ForeignKey, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
@@ -15,9 +15,15 @@ if TYPE_CHECKING:
 
 class JobApplication(Base):
     __tablename__ = "job_applications"
+    __table_args__ = (
+        CheckConstraint(
+            "status IN ('Saved', 'Applied', 'Interview', 'Rejected', 'Accepted')",
+            name="status_check",
+        ),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
     company: Mapped[str] = mapped_column(String(150))
     position: Mapped[str] = mapped_column(String(150))
     job_url: Mapped[str | None] = mapped_column(Text)
@@ -25,8 +31,10 @@ class JobApplication(Base):
     status: Mapped[str] = mapped_column(String(20))
     application_date: Mapped[datetime.date | None] = mapped_column(Date)
     notes: Mapped[str | None] = mapped_column(Text)
-    created_at: Mapped[datetime.datetime] = mapped_column(server_default=func.now())
-    updated_at: Mapped[datetime.datetime] = mapped_column(
+    created_at: Mapped[datetime.datetime | None] = mapped_column(
+        server_default=func.now()
+    )
+    updated_at: Mapped[datetime.datetime | None] = mapped_column(
         server_default=func.now(), onupdate=func.now()
     )
 

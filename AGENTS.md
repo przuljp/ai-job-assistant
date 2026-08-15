@@ -89,6 +89,30 @@ Run the development server:
 uvicorn app.main:app --reload
 ```
 
+Check the current database migration revision:
+
+```powershell
+alembic current
+```
+
+Apply all pending database migrations:
+
+```powershell
+alembic upgrade head
+```
+
+Roll back the most recent migration:
+
+```powershell
+alembic downgrade -1
+```
+
+Create a migration after changing SQLAlchemy models:
+
+```powershell
+alembic revision --autogenerate -m "describe the schema change"
+```
+
 When adding a new dependency, update `requirements.txt`.
 
 If testing, linting, formatting, migration tooling, or other development tools are introduced later, document the relevant commands here.

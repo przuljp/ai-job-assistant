@@ -3,7 +3,8 @@ from __future__ import annotations
 import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import ForeignKey, Text, func
+from sqlalchemy import CheckConstraint, ForeignKey, func
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
@@ -15,13 +16,25 @@ if TYPE_CHECKING:
 
 class AIAnalysis(Base):
     __tablename__ = "ai_analysis"
+    __table_args__ = (
+        CheckConstraint(
+            "match_score BETWEEN 0 AND 100",
+            name="ai_analysis_match_score_check",
+        ),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    job_application_id: Mapped[int] = mapped_column(ForeignKey("job_applications.id"))
-    resume_id: Mapped[int] = mapped_column(ForeignKey("resumes.id"))
-    match_score: Mapped[int | None] = mapped_column()
-    feedback: Mapped[str | None] = mapped_column(Text)
-    created_at: Mapped[datetime.datetime] = mapped_column(server_default=func.now())
+    job_application_id: Mapped[int] = mapped_column(
+        ForeignKey("job_applications.id", ondelete="CASCADE")
+    )
+    resume_id: Mapped[int] = mapped_column(
+        ForeignKey("resumes.id", ondelete="CASCADE")
+    )
+    match_score: Mapped[int] = mapped_column()
+    details: Mapped[dict[str, object]] = mapped_column(JSONB)
+    created_at: Mapped[datetime.datetime | None] = mapped_column(
+        server_default=func.now()
+    )
 
     job_application: Mapped["JobApplication"] = relationship(
         back_populates="ai_analyses"

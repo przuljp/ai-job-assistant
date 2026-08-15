@@ -17,10 +17,12 @@ class Resume(Base):
     __tablename__ = "resumes"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
     title: Mapped[str] = mapped_column(String(100))
     file_url: Mapped[str] = mapped_column(Text)
-    uploaded_at: Mapped[datetime.datetime] = mapped_column(server_default=func.now())
+    uploaded_at: Mapped[datetime.datetime | None] = mapped_column(
+        server_default=func.now()
+    )
 
     user: Mapped["User"] = relationship(back_populates="resumes")
     ai_analyses: Mapped[list["AIAnalysis"]] = relationship(back_populates="resume")

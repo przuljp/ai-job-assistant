@@ -1,5 +1,6 @@
 ﻿annotated-doc==0.0.4
 annotated-types==0.7.0
+Alembic==1.19.1
 anyio==4.14.2
 argon2-cffi==25.1.0
 argon2-cffi-bindings==25.1.0
@@ -12,6 +13,8 @@ fastapi==0.139.2
 greenlet==3.5.3
 h11==0.16.0
 idna==3.18
+Mako==1.4.1
+MarkupSafe==3.0.3
 psycopg2-binary==2.9.12
 pwdlib==0.3.0
 pycparser==3.0
