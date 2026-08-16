@@ -1,15 +1,12 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import api from '../api/api.js'
-import useAuth from '../auth/useAuth.js'
+import AppNav from '../components/AppNav.jsx'
 import StatCard from '../components/StatCard.jsx'
 
 function Dashboard() {
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const { logout } = useAuth()
-  const navigate = useNavigate()
 
   useEffect(() => {
     let active = true
@@ -39,14 +36,10 @@ function Dashboard() {
     }
   }, [])
 
-  function handleLogout() {
-    logout()
-    navigate('/login', { replace: true })
-  }
-
   if (loading) {
     return (
       <main>
+        <AppNav />
         <p>Loading dashboard...</p>
       </main>
     )
@@ -55,22 +48,17 @@ function Dashboard() {
   if (error) {
     return (
       <main>
+        <AppNav />
         <h1>Dashboard</h1>
         <p role="alert">{error}</p>
-        <button type="button" onClick={handleLogout}>
-          Logout
-        </button>
       </main>
     )
   }
 
   return (
     <main>
+      <AppNav />
       <h1>Dashboard</h1>
-
-      <button type="button" onClick={handleLogout}>
-        Logout
-      </button>
 
       <section aria-label="Application statistics">
         <StatCard label="Total Applications" value={data.total_applications} />

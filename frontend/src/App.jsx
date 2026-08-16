@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import ProtectedRoute from './auth/ProtectedRoute.jsx'
+import PublicRoute from './auth/PublicRoute.jsx'
 import Applications from './pages/Applications.jsx'
 import Dashboard from './pages/Dashboard.jsx'
 import Login from './pages/Login.jsx'
@@ -10,8 +11,11 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
+
+      <Route element={<PublicRoute />}>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+      </Route>
 
       <Route element={<ProtectedRoute />}>
         <Route path="/dashboard" element={<Dashboard />} />

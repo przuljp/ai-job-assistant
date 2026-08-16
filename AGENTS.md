@@ -49,7 +49,7 @@ Job applications and resumes are always scoped to the authenticated user.
 
 Cross-user access to protected resources should return `404 Not Found` rather than exposing whether another user's resource exists.
 
-The frontend has a React foundation built with Vite and JavaScript. It includes centralized authentication state, authenticated Axios requests, protected routes, logout, and a user-scoped Dashboard. Other feature UI is not implemented yet.
+The frontend has a React foundation built with Vite and JavaScript. It includes registration and login flows, centralized authentication state, authenticated Axios requests, protected routes, logout, a user-scoped Dashboard, and Job Application CRUD UI. Other feature UI is not implemented yet.
 
 The first AI analysis feature is implemented using OpenAI Structured Outputs.
 
@@ -976,9 +976,11 @@ frontend/src/
 └── main.jsx      # Application entry point
 ```
 
+The registration page posts the backend's required user fields to `/users/register` and redirects successful registrations to `/login`. Registration does not automatically authenticate the user. Login and registration link to each other and share a public-route guard that redirects already-authenticated users to `/dashboard`.
+
 The login page posts JSON credentials to `/users/login`, passes the returned JWT to `AuthContext`, and redirects to `/dashboard`. The context persists the token under the `access_token` local-storage key. The shared Axios client adds the bearer token to requests, and a response interceptor clears invalid authentication after a `401` response. Dashboard, Applications, and Resumes routes use a shared protected-route guard.
 
-The Dashboard fetches the authenticated user's aggregate data from `GET /dashboard` and renders application statistics and recent applications. Applications and Resumes remain routing placeholders.
+The Dashboard fetches the authenticated user's aggregate data from `GET /dashboard` and renders application statistics and recent applications. The Applications page supports listing, creating, editing, and deleting the authenticated user's Job Applications through the existing ownership-scoped API. Dashboard, Applications, and Resumes share a minimal authenticated navigation component. Resumes remains a routing placeholder.
 
 Local storage is acceptable for this MVP, but its tokens are accessible to JavaScript and therefore exposed if an XSS vulnerability exists. Some production applications instead use secure HttpOnly cookies as part of a broader CSRF-aware authentication design.
 

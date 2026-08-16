@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import api from '../api/api.js'
 import useAuth from '../auth/useAuth.js'
 
@@ -70,6 +70,10 @@ function Login() {
           {loading ? 'Signing in...' : 'Login'}
         </button>
       </form>
+
+      <p>
+        Need an account? <Link to="/register">Register</Link>
+      </p>
     </main>
   )
 }
