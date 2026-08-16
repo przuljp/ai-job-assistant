@@ -49,7 +49,7 @@ Job applications and resumes are always scoped to the authenticated user.
 
 Cross-user access to protected resources should return `404 Not Found` rather than exposing whether another user's resource exists.
 
-The frontend directory exists but frontend development has not started yet.
+The frontend has a React foundation built with Vite and JavaScript. It includes centralized authentication state, authenticated Axios requests, protected routes, logout, and a user-scoped Dashboard. Other feature UI is not implemented yet.
 
 The first AI analysis feature is implemented using OpenAI Structured Outputs.
 
@@ -59,7 +59,7 @@ Upcoming major features include:
 2. AI resume improvement suggestions
 3. Cover letter generation
 4. Interview preparation
-5. React frontend
+5. React frontend feature development
 6. Dockerization
 7. Deployment
 
@@ -130,6 +130,20 @@ Run the automated test suite:
 
 ```powershell
 pytest
+```
+
+Frontend commands should be run from `frontend/`.
+
+Install frontend dependencies:
+
+```powershell
+npm install
+```
+
+Run the frontend development server:
+
+```powershell
+npm run dev
 ```
 
 When adding a new dependency, update `requirements.txt`.
@@ -942,9 +956,33 @@ When implementing a significant feature, avoid mixing unrelated refactors into t
 
 ## Frontend
 
-The frontend has not been implemented yet.
+The frontend foundation uses:
 
-React is planned.
+- Vite
+- React
+- JavaScript
+- React Router
+- Axios
+
+Frontend source code is organized by responsibility:
+
+```text
+frontend/src/
+├── api/          # Shared API client configuration
+├── auth/         # Authentication context, hook, and route guard
+├── components/   # Small reusable UI components
+├── pages/        # Route-level page components
+├── App.jsx       # Route definitions
+└── main.jsx      # Application entry point
+```
+
+The login page posts JSON credentials to `/users/login`, passes the returned JWT to `AuthContext`, and redirects to `/dashboard`. The context persists the token under the `access_token` local-storage key. The shared Axios client adds the bearer token to requests, and a response interceptor clears invalid authentication after a `401` response. Dashboard, Applications, and Resumes routes use a shared protected-route guard.
+
+The Dashboard fetches the authenticated user's aggregate data from `GET /dashboard` and renders application statistics and recent applications. Applications and Resumes remain routing placeholders.
+
+Local storage is acceptable for this MVP, but its tokens are accessible to JavaScript and therefore exposed if an XSS vulnerability exists. Some production applications instead use secure HttpOnly cookies as part of a broader CSRF-aware authentication design.
+
+The FastAPI application explicitly allows the local Vite development origin, `http://localhost:5173`, through CORS middleware.
 
 The backend API should remain frontend-independent.
 
@@ -974,7 +1012,7 @@ Future deployment work may include:
 - Docker
 - production environment variables
 - PostgreSQL production database
-- CORS configuration
+- production CORS configuration
 - secure secret management
 - production ASGI server configuration
 - persistent resume file storage or object storage
