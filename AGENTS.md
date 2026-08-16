@@ -146,6 +146,12 @@ Run the frontend development server:
 npm run dev
 ```
 
+Run the frontend test suite:
+
+```powershell
+npm test
+```
+
 When adding a new dependency, update `requirements.txt`.
 
 If testing, linting, formatting, migration tooling, or other development tools are introduced later, document the relevant commands here.
@@ -963,6 +969,12 @@ The frontend foundation uses:
 - JavaScript
 - React Router
 - Axios
+- Tailwind CSS
+- shadcn/ui
+
+Frontend component tests use Vitest with React Testing Library, jest-dom matchers, and a jsdom environment. API calls are mocked in frontend tests.
+
+Frontend styling uses Tailwind CSS v4 through the official Vite plugin and locally generated shadcn/ui JavaScript components. Authenticated routes share a responsive `AppLayout` with a sidebar on desktop and compact horizontal navigation on smaller screens. Domain components remain custom and compose the shared UI primitives in `frontend/src/components/ui/`.
 
 Frontend source code is organized by responsibility:
 

@@ -1,8 +1,21 @@
 import { useEffect, useState } from 'react'
+import { BriefcaseBusiness, LoaderCircle, Plus, Save, X } from 'lucide-react'
 import api from '../api/api.js'
 import AIAnalysisPanel from '../components/AIAnalysisPanel.jsx'
-import AppNav from '../components/AppNav.jsx'
 import ApplicationCard from '../components/ApplicationCard.jsx'
+import { Alert, AlertDescription } from '@/components/ui/alert.jsx'
+import { Button } from '@/components/ui/button.jsx'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card.jsx'
+import { Input } from '@/components/ui/input.jsx'
+import { Label } from '@/components/ui/label.jsx'
+import { Separator } from '@/components/ui/separator.jsx'
+import { Textarea } from '@/components/ui/textarea.jsx'
 
 const STATUS_OPTIONS = [
   'Saved',
@@ -188,141 +201,228 @@ function Applications() {
   }
 
   return (
-    <main>
-      <AppNav />
-      <h1>Applications</h1>
+    <div className="space-y-10">
+      <header className="space-y-1">
+        <p className="text-sm font-medium text-primary">Pipeline</p>
+        <h1 className="text-3xl font-semibold tracking-tight">Applications</h1>
+        <p className="max-w-2xl text-sm text-muted-foreground">
+          Track opportunities, update their status, and compare your resume to
+          each role.
+        </p>
+      </header>
 
-      <section aria-labelledby="application-form-heading">
-        <h2 id="application-form-heading">
-          {editingId !== null ? 'Edit Application' : 'Add Application'}
-        </h2>
-
-        <form onSubmit={handleSubmit}>
-          <div>
-            <label htmlFor="company">Company</label>
-            <input
-              id="company"
-              name="company"
-              type="text"
-              minLength={1}
-              maxLength={150}
-              value={formData.company}
-              onChange={handleChange}
-              required
-            />
+      <Card className="shadow-sm">
+        <CardHeader>
+          <div className="flex items-start gap-3">
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/8 text-primary">
+              {editingId !== null ? (
+                <Save className="size-4" aria-hidden="true" />
+              ) : (
+                <Plus className="size-4" aria-hidden="true" />
+              )}
+            </span>
+            <div>
+              <CardTitle>
+                <h2 id="application-form-heading">
+                  {editingId !== null
+                    ? 'Edit Application'
+                    : 'Add Application'}
+                </h2>
+              </CardTitle>
+              <CardDescription>
+                {editingId !== null
+                  ? 'Update the details for this opportunity.'
+                  : 'Add an opportunity to your job search pipeline.'}
+              </CardDescription>
+            </div>
           </div>
-
-          <div>
-            <label htmlFor="position">Position</label>
-            <input
-              id="position"
-              name="position"
-              type="text"
-              minLength={1}
-              maxLength={150}
-              value={formData.position}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div>
-            <label htmlFor="job-url">Job URL</label>
-            <input
-              id="job-url"
-              name="job_url"
-              type="url"
-              value={formData.job_url}
-              onChange={handleChange}
-            />
-          </div>
-
-          <div>
-            <label htmlFor="job-description">Job description</label>
-            <textarea
-              id="job-description"
-              name="job_description"
-              value={formData.job_description}
-              onChange={handleChange}
-            />
-          </div>
-
-          <div>
-            <label htmlFor="status">Status</label>
-            <select
-              id="status"
-              name="status"
-              value={formData.status}
-              onChange={handleChange}
-              required
+        </CardHeader>
+        <CardContent>
+          <section aria-labelledby="application-form-heading">
+            <form
+              className="grid gap-5 sm:grid-cols-2"
+              onSubmit={handleSubmit}
             >
-              {STATUS_OPTIONS.map((status) => (
-                <option key={status} value={status}>
-                  {status}
-                </option>
-              ))}
-            </select>
-          </div>
+              <div className="space-y-2">
+                <Label htmlFor="company">Company</Label>
+                <Input
+                  id="company"
+                  name="company"
+                  type="text"
+                  minLength={1}
+                  maxLength={150}
+                  value={formData.company}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
 
-          <div>
-            <label htmlFor="application-date">Application date</label>
-            <input
-              id="application-date"
-              name="application_date"
-              type="date"
-              value={formData.application_date}
-              onChange={handleChange}
-            />
-          </div>
+              <div className="space-y-2">
+                <Label htmlFor="position">Position</Label>
+                <Input
+                  id="position"
+                  name="position"
+                  type="text"
+                  minLength={1}
+                  maxLength={150}
+                  value={formData.position}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
 
-          <div>
-            <label htmlFor="notes">Notes</label>
-            <textarea
-              id="notes"
-              name="notes"
-              value={formData.notes}
-              onChange={handleChange}
-            />
-          </div>
+              <div className="space-y-2">
+                <Label htmlFor="job-url">Job URL</Label>
+                <Input
+                  id="job-url"
+                  name="job_url"
+                  type="url"
+                  placeholder="https://company.com/jobs/..."
+                  value={formData.job_url}
+                  onChange={handleChange}
+                />
+              </div>
 
-          {formError && <p role="alert">{formError}</p>}
+              <div className="space-y-2">
+                <Label htmlFor="status">Status</Label>
+                <select
+                  id="status"
+                  name="status"
+                  className="h-8 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+                  value={formData.status}
+                  onChange={handleChange}
+                  required
+                >
+                  {STATUS_OPTIONS.map((status) => (
+                    <option key={status} value={status}>
+                      {status}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-          <button type="submit" disabled={submitting}>
-            {submitting
-              ? 'Saving...'
-              : editingId !== null
-                ? 'Update Application'
-                : 'Create Application'}
-          </button>{' '}
+              <div className="space-y-2">
+                <Label htmlFor="application-date">Application date</Label>
+                <Input
+                  id="application-date"
+                  name="application_date"
+                  type="date"
+                  value={formData.application_date}
+                  onChange={handleChange}
+                />
+              </div>
 
-          {editingId !== null && (
-            <button type="button" onClick={resetForm} disabled={submitting}>
-              Cancel
-            </button>
-          )}
-        </form>
-      </section>
+              <div className="space-y-2 sm:col-span-2">
+                <Label htmlFor="job-description">Job description</Label>
+                <Textarea
+                  id="job-description"
+                  name="job_description"
+                  className="min-h-32"
+                  placeholder="Paste the role requirements and responsibilities..."
+                  value={formData.job_description}
+                  onChange={handleChange}
+                />
+              </div>
 
-      {success && <p>{success}</p>}
-      {error && <p role="alert">{error}</p>}
+              <div className="space-y-2 sm:col-span-2">
+                <Label htmlFor="notes">Notes</Label>
+                <Textarea
+                  id="notes"
+                  name="notes"
+                  placeholder="Contacts, follow-up dates, or preparation notes..."
+                  value={formData.notes}
+                  onChange={handleChange}
+                />
+              </div>
 
-      <section aria-labelledby="application-list-heading">
-        <h2 id="application-list-heading">Your Applications</h2>
+              {formError && (
+                <Alert variant="destructive" className="sm:col-span-2">
+                  <AlertDescription>{formError}</AlertDescription>
+                </Alert>
+              )}
+
+              <div className="flex flex-wrap gap-2 sm:col-span-2">
+                <Button type="submit" disabled={submitting}>
+                  {submitting && (
+                    <LoaderCircle
+                      data-icon="inline-start"
+                      className="animate-spin"
+                      aria-hidden="true"
+                    />
+                  )}
+                  {submitting
+                    ? 'Saving...'
+                    : editingId !== null
+                      ? 'Update Application'
+                      : 'Create Application'}
+                </Button>
+
+                {editingId !== null && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={resetForm}
+                    disabled={submitting}
+                  >
+                    <X data-icon="inline-start" aria-hidden="true" />
+                    Cancel
+                  </Button>
+                )}
+              </div>
+            </form>
+          </section>
+        </CardContent>
+      </Card>
+
+      {(success || error) && (
+        <Alert variant={error ? 'destructive' : 'default'}>
+          <AlertDescription>{error || success}</AlertDescription>
+        </Alert>
+      )}
+
+      <section
+        aria-labelledby="application-list-heading"
+        className="space-y-5"
+      >
+        <div className="flex items-center gap-3">
+          <BriefcaseBusiness className="size-5 text-primary" aria-hidden="true" />
+          <h2
+            id="application-list-heading"
+            className="text-xl font-semibold tracking-tight"
+          >
+            Your Applications
+          </h2>
+        </div>
+        <Separator />
 
         {loading ? (
-          <p>Loading applications...</p>
+          <div className="flex items-center py-8 text-sm text-muted-foreground">
+            <LoaderCircle className="mr-2 size-4 animate-spin" aria-hidden="true" />
+            <p>Loading applications...</p>
+          </div>
         ) : applications.length === 0 ? (
-          <p>No applications yet.</p>
-        ) : (
-          applications.map((application) => (
-            <ApplicationCard
-              key={application.id}
-              application={application}
-              deleting={deletingId === application.id}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
+          <div className="rounded-xl border border-dashed px-6 py-12 text-center">
+            <BriefcaseBusiness
+              className="mx-auto mb-3 size-8 text-muted-foreground/60"
+              aria-hidden="true"
             />
-          ))
+            <p className="font-medium">No applications yet.</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Add your first opportunity using the form above.
+            </p>
+          </div>
+        ) : (
+          <div className="grid gap-4 lg:grid-cols-2">
+            {applications.map((application) => (
+              <ApplicationCard
+                key={application.id}
+                application={application}
+                deleting={deletingId === application.id}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+              />
+            ))}
+          </div>
         )}
       </section>
 
@@ -330,7 +430,7 @@ function Applications() {
         applications={applications}
         applicationsLoading={loading}
       />
-    </main>
+    </div>
   )
 }
 

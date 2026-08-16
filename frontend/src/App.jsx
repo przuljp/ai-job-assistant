@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import ProtectedRoute from './auth/ProtectedRoute.jsx'
 import PublicRoute from './auth/PublicRoute.jsx'
+import AppLayout from './components/AppLayout.jsx'
 import Applications from './pages/Applications.jsx'
 import Dashboard from './pages/Dashboard.jsx'
 import Login from './pages/Login.jsx'
@@ -18,9 +19,11 @@ function App() {
       </Route>
 
       <Route element={<ProtectedRoute />}>
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/applications" element={<Applications />} />
-        <Route path="/resumes" element={<Resumes />} />
+        <Route element={<AppLayout />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/applications" element={<Applications />} />
+          <Route path="/resumes" element={<Resumes />} />
+        </Route>
       </Route>
     </Routes>
   )

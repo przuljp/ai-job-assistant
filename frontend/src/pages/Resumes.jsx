@@ -1,6 +1,18 @@
 import { useEffect, useState } from 'react'
+import { FileText, LoaderCircle, Trash2, UploadCloud } from 'lucide-react'
 import api from '../api/api.js'
-import AppNav from '../components/AppNav.jsx'
+import { Alert, AlertDescription } from '@/components/ui/alert.jsx'
+import { Button } from '@/components/ui/button.jsx'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card.jsx'
+import { Input } from '@/components/ui/input.jsx'
+import { Label } from '@/components/ui/label.jsx'
+import { Separator } from '@/components/ui/separator.jsx'
 
 function addResume(current, resume) {
   return [resume, ...current]
@@ -158,74 +170,156 @@ function Resumes() {
   }
 
   return (
-    <main>
-      <AppNav />
-      <h1>Resumes</h1>
+    <div className="space-y-10">
+      <header className="space-y-1">
+        <p className="text-sm font-medium text-primary">Documents</p>
+        <h1 className="text-3xl font-semibold tracking-tight">Resumes</h1>
+        <p className="max-w-2xl text-sm text-muted-foreground">
+          Keep focused resume versions ready for different roles and analyses.
+        </p>
+      </header>
 
-      <section aria-labelledby="resume-upload-heading">
-        <h2 id="resume-upload-heading">Upload a Resume</h2>
-
-        <form onSubmit={handleUpload}>
-          <div>
-            <label htmlFor="resume-title">Title</label>
-            <input
-              id="resume-title"
-              type="text"
-              minLength={1}
-              maxLength={100}
-              value={title}
-              onChange={(event) => setTitle(event.target.value)}
-              required
-            />
+      <Card className="shadow-sm">
+        <CardHeader>
+          <div className="flex items-start gap-3">
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/8 text-primary">
+              <UploadCloud className="size-4" aria-hidden="true" />
+            </span>
+            <div>
+              <CardTitle>
+                <h2 id="resume-upload-heading">Upload a Resume</h2>
+              </CardTitle>
+              <CardDescription>
+                Add a clearly named PDF to your resume library.
+              </CardDescription>
+            </div>
           </div>
+        </CardHeader>
+        <CardContent>
+          <section aria-labelledby="resume-upload-heading">
+            <form
+              className="grid items-end gap-5 md:grid-cols-[1fr_1.4fr_auto]"
+              onSubmit={handleUpload}
+            >
+              <div className="space-y-2">
+                <Label htmlFor="resume-title">Title</Label>
+                <Input
+                  id="resume-title"
+                  type="text"
+                  minLength={1}
+                  maxLength={100}
+                  placeholder="Backend engineer resume"
+                  value={title}
+                  onChange={(event) => setTitle(event.target.value)}
+                  required
+                />
+              </div>
 
-          <div>
-            <label htmlFor="resume-file">PDF file</label>
-            <input
-              key={fileInputKey}
-              id="resume-file"
-              type="file"
-              accept="application/pdf"
-              onChange={handleFileChange}
-              required
-            />
-          </div>
+              <div className="space-y-2">
+                <Label htmlFor="resume-file">PDF file</Label>
+                <Input
+                  key={fileInputKey}
+                  id="resume-file"
+                  className="cursor-pointer file:mr-3"
+                  type="file"
+                  accept="application/pdf"
+                  onChange={handleFileChange}
+                  required
+                />
+              </div>
 
-          {formError && <p role="alert">{formError}</p>}
+              <Button type="submit" disabled={uploading}>
+                {uploading ? (
+                  <LoaderCircle
+                    data-icon="inline-start"
+                    className="animate-spin"
+                    aria-hidden="true"
+                  />
+                ) : (
+                  <UploadCloud data-icon="inline-start" aria-hidden="true" />
+                )}
+                {uploading ? 'Uploading...' : 'Upload Resume'}
+              </Button>
 
-          <button type="submit" disabled={uploading}>
-            {uploading ? 'Uploading...' : 'Upload Resume'}
-          </button>
-        </form>
-      </section>
+              {formError && (
+                <Alert variant="destructive" className="md:col-span-3">
+                  <AlertDescription>{formError}</AlertDescription>
+                </Alert>
+              )}
+            </form>
+          </section>
+        </CardContent>
+      </Card>
 
-      {success && <p>{success}</p>}
-      {error && <p role="alert">{error}</p>}
+      {(success || error) && (
+        <Alert variant={error ? 'destructive' : 'default'}>
+          <AlertDescription>{error || success}</AlertDescription>
+        </Alert>
+      )}
 
-      <section aria-labelledby="resume-list-heading">
-        <h2 id="resume-list-heading">Your Resumes</h2>
+      <section aria-labelledby="resume-list-heading" className="space-y-5">
+        <div className="flex items-center gap-3">
+          <FileText className="size-5 text-primary" aria-hidden="true" />
+          <h2
+            id="resume-list-heading"
+            className="text-xl font-semibold tracking-tight"
+          >
+            Your Resumes
+          </h2>
+        </div>
+        <Separator />
 
         {loading ? (
-          <p>Loading resumes...</p>
+          <div className="flex items-center py-8 text-sm text-muted-foreground">
+            <LoaderCircle className="mr-2 size-4 animate-spin" aria-hidden="true" />
+            <p>Loading resumes...</p>
+          </div>
         ) : resumes.length === 0 ? (
-          <p>No resumes yet.</p>
+          <div className="rounded-xl border border-dashed px-6 py-12 text-center">
+            <FileText
+              className="mx-auto mb-3 size-8 text-muted-foreground/60"
+              aria-hidden="true"
+            />
+            <p className="font-medium">No resumes yet.</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Upload your first PDF using the form above.
+            </p>
+          </div>
         ) : (
-          resumes.map((resume) => (
-            <article key={resume.id}>
-              <h3>{resume.title}</h3>
-              <p>Uploaded {formatUploadedAt(resume.uploaded_at)}</p>
-              <button
-                type="button"
-                onClick={() => handleDelete(resume)}
-                disabled={deletingId === resume.id}
-              >
-                {deletingId === resume.id ? 'Deleting...' : 'Delete'}
-              </button>
-            </article>
-          ))
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {resumes.map((resume) => (
+              <article key={resume.id}>
+                <Card className="h-full gap-4 shadow-sm transition-shadow hover:shadow-md">
+                  <CardHeader className="flex-row items-start gap-3">
+                    <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/8 text-primary">
+                      <FileText className="size-5" aria-hidden="true" />
+                    </span>
+                    <div className="min-w-0">
+                      <h3 className="truncate font-semibold">{resume.title}</h3>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        Uploaded {formatUploadedAt(resume.uploaded_at)}
+                      </p>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="mt-auto flex justify-end">
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => handleDelete(resume)}
+                      disabled={deletingId === resume.id}
+                    >
+                      <Trash2 data-icon="inline-start" aria-hidden="true" />
+                      {deletingId === resume.id ? 'Deleting...' : 'Delete'}
+                    </Button>
+                  </CardContent>
+                </Card>
+              </article>
+            ))}
+          </div>
         )}
       </section>
-    </main>
+    </div>
   )
 }
 

@@ -1,6 +1,18 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { Sparkles } from 'lucide-react'
 import api from '../api/api.js'
+import { Alert, AlertDescription } from '@/components/ui/alert.jsx'
+import { Button } from '@/components/ui/button.jsx'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card.jsx'
+import { Input } from '@/components/ui/input.jsx'
+import { Label } from '@/components/ui/label.jsx'
 
 function Register() {
   const [fullName, setFullName] = useState('')
@@ -45,79 +57,111 @@ function Register() {
   }
 
   return (
-    <main>
-      <h1>Register</h1>
-
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="full-name">Full name</label>
-          <input
-            id="full-name"
-            name="fullName"
-            type="text"
-            autoComplete="name"
-            minLength={1}
-            maxLength={100}
-            value={fullName}
-            onChange={(event) => setFullName(event.target.value)}
-            required
-          />
+    <main className="grid min-h-screen place-items-center bg-muted/40 px-4 py-10">
+      <div className="w-full max-w-md space-y-6">
+        <div className="flex items-center justify-center gap-2 text-sm font-semibold">
+          <span className="flex size-9 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm">
+            <Sparkles className="size-4" aria-hidden="true" />
+          </span>
+          AI Job Assistant
         </div>
 
-        <div>
-          <label htmlFor="register-email">Email</label>
-          <input
-            id="register-email"
-            name="email"
-            type="email"
-            autoComplete="email"
-            maxLength={255}
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            required
-          />
-        </div>
+        <Card className="gap-6 py-6 shadow-lg shadow-black/5">
+          <CardHeader className="text-center">
+            <CardTitle>
+              <h1 className="text-2xl font-semibold tracking-tight">
+                Create your account
+              </h1>
+            </CardTitle>
+            <CardDescription>
+              Build a clearer, more organized job search.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form className="space-y-4" onSubmit={handleSubmit}>
+              <div className="space-y-2">
+                <Label htmlFor="full-name">Full name</Label>
+                <Input
+                  id="full-name"
+                  name="fullName"
+                  type="text"
+                  autoComplete="name"
+                  minLength={1}
+                  maxLength={100}
+                  value={fullName}
+                  onChange={(event) => setFullName(event.target.value)}
+                  required
+                />
+              </div>
 
-        <div>
-          <label htmlFor="register-password">Password</label>
-          <input
-            id="register-password"
-            name="password"
-            type="password"
-            autoComplete="new-password"
-            minLength={8}
-            maxLength={128}
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            required
-          />
-        </div>
+              <div className="space-y-2">
+                <Label htmlFor="register-email">Email</Label>
+                <Input
+                  id="register-email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  maxLength={255}
+                  placeholder="you@example.com"
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  required
+                />
+              </div>
 
-        <div>
-          <label htmlFor="confirm-password">Confirm password</label>
-          <input
-            id="confirm-password"
-            name="confirmPassword"
-            type="password"
-            autoComplete="new-password"
-            minLength={8}
-            maxLength={128}
-            value={confirmPassword}
-            onChange={(event) => setConfirmPassword(event.target.value)}
-            required
-          />
-        </div>
+              <div className="space-y-2">
+                <Label htmlFor="register-password">Password</Label>
+                <Input
+                  id="register-password"
+                  name="password"
+                  type="password"
+                  autoComplete="new-password"
+                  minLength={8}
+                  maxLength={128}
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                  required
+                />
+              </div>
 
-        {error && <p role="alert">{error}</p>}
+              <div className="space-y-2">
+                <Label htmlFor="confirm-password">Confirm password</Label>
+                <Input
+                  id="confirm-password"
+                  name="confirmPassword"
+                  type="password"
+                  autoComplete="new-password"
+                  minLength={8}
+                  maxLength={128}
+                  value={confirmPassword}
+                  onChange={(event) => setConfirmPassword(event.target.value)}
+                  required
+                />
+              </div>
 
-        <button type="submit" disabled={loading}>
-          {loading ? 'Creating account...' : 'Register'}
-        </button>
-      </form>
+              {error && (
+                <Alert variant="destructive">
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
 
-      <p>
-        Already have an account? <Link to="/login">Login</Link>
-      </p>
+              <Button className="w-full" type="submit" disabled={loading}>
+                {loading ? 'Creating account...' : 'Register'}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+
+        <p className="text-center text-sm text-muted-foreground">
+          Already have an account?{' '}
+          <Link
+            className="font-medium text-primary underline-offset-4 hover:underline"
+            to="/login"
+          >
+            Login
+          </Link>
+        </p>
+      </div>
     </main>
   )
 }

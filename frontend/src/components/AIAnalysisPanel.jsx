@@ -1,8 +1,19 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { Bot, LoaderCircle, Sparkles } from 'lucide-react'
 import api from '../api/api.js'
 import AIAnalysisResult from './AIAnalysisResult.jsx'
 import AnalysisHistory from './AnalysisHistory.jsx'
+import { Alert, AlertDescription } from '@/components/ui/alert.jsx'
+import { Button } from '@/components/ui/button.jsx'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card.jsx'
+import { Label } from '@/components/ui/label.jsx'
 
 function toAnalysisSummary(analysis) {
   return {
@@ -217,79 +228,126 @@ function AIAnalysisPanel({ applications, applicationsLoading }) {
   }
 
   return (
-    <section aria-labelledby="ai-analysis-heading">
-      <h2 id="ai-analysis-heading">Resume Match Analysis</h2>
-
-      <form onSubmit={handleAnalyze}>
-        <div>
-          <label htmlFor="analysis-application">Job application</label>
-          <select
-            id="analysis-application"
-            value={selectedApplicationId}
-            onChange={handleApplicationChange}
-            disabled={applicationsLoading || applications.length === 0}
-            required
+    <section aria-labelledby="ai-analysis-heading" className="space-y-6">
+      <Card className="border-primary/15 bg-gradient-to-br from-card to-primary/[0.025] shadow-sm">
+        <CardHeader>
+          <div className="flex items-start gap-3">
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm">
+              <Sparkles className="size-4" aria-hidden="true" />
+            </span>
+            <div>
+              <CardTitle>
+                <h2 id="ai-analysis-heading">Resume Match Analysis</h2>
+              </CardTitle>
+              <CardDescription>
+                Compare a saved resume with a job description using structured
+                AI feedback.
+              </CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <form
+            className="grid items-end gap-5 md:grid-cols-[1fr_1fr_auto]"
+            onSubmit={handleAnalyze}
           >
-            <option value="">Select an application</option>
-            {applications.map((application) => (
-              <option key={application.id} value={application.id}>
-                {application.position} at {application.company}
-              </option>
-            ))}
-          </select>
-        </div>
+            <div className="space-y-2">
+              <Label htmlFor="analysis-application">Job application</Label>
+              <select
+                id="analysis-application"
+                className="h-8 w-full min-w-0 rounded-lg border border-input bg-background px-2.5 text-sm outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:bg-muted disabled:opacity-60"
+                value={selectedApplicationId}
+                onChange={handleApplicationChange}
+                disabled={applicationsLoading || applications.length === 0}
+                required
+              >
+                <option value="">Select an application</option>
+                {applications.map((application) => (
+                  <option key={application.id} value={application.id}>
+                    {application.position} at {application.company}
+                  </option>
+                ))}
+              </select>
+              {applicationsLoading ? (
+                <p className="text-xs text-muted-foreground">
+                  Loading applications...
+                </p>
+              ) : applications.length === 0 ? (
+                <p className="text-xs text-muted-foreground">
+                  Create a job application before running an analysis.
+                </p>
+              ) : null}
+            </div>
 
-        {applicationsLoading ? (
-          <p>Loading applications...</p>
-        ) : applications.length === 0 ? (
-          <p>Create a job application before running an analysis.</p>
-        ) : null}
+            <div className="space-y-2">
+              <Label htmlFor="analysis-resume">Resume</Label>
+              <select
+                id="analysis-resume"
+                className="h-8 w-full min-w-0 rounded-lg border border-input bg-background px-2.5 text-sm outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:bg-muted disabled:opacity-60"
+                value={selectedResumeId}
+                onChange={(event) => {
+                  setSelectedResumeId(event.target.value)
+                  setAnalysisError('')
+                }}
+                disabled={resumesLoading || resumes.length === 0}
+                required
+              >
+                <option value="">Select a resume</option>
+                {resumes.map((resume) => (
+                  <option key={resume.id} value={resume.id}>
+                    {resume.title}
+                  </option>
+                ))}
+              </select>
+              {resumesLoading ? (
+                <p className="text-xs text-muted-foreground">
+                  Loading resumes...
+                </p>
+              ) : resumes.length === 0 && !resumesError ? (
+                <p className="text-xs text-muted-foreground">
+                  No resumes uploaded.{' '}
+                  <Link
+                    className="font-medium text-primary hover:underline"
+                    to="/resumes"
+                  >
+                    Upload a resume
+                  </Link>{' '}
+                  first.
+                </p>
+              ) : null}
+            </div>
 
-        <div>
-          <label htmlFor="analysis-resume">Resume</label>
-          <select
-            id="analysis-resume"
-            value={selectedResumeId}
-            onChange={(event) => {
-              setSelectedResumeId(event.target.value)
-              setAnalysisError('')
-            }}
-            disabled={resumesLoading || resumes.length === 0}
-            required
-          >
-            <option value="">Select a resume</option>
-            {resumes.map((resume) => (
-              <option key={resume.id} value={resume.id}>
-                {resume.title}
-              </option>
-            ))}
-          </select>
-        </div>
+            <Button
+              type="submit"
+              disabled={
+                analyzing ||
+                !selectedApplicationId ||
+                !selectedResumeId ||
+                resumesLoading
+              }
+            >
+              {analyzing ? (
+                <LoaderCircle
+                  data-icon="inline-start"
+                  className="animate-spin"
+                  aria-hidden="true"
+                />
+              ) : (
+                <Bot data-icon="inline-start" aria-hidden="true" />
+              )}
+              {analyzing ? 'Analyzing...' : 'Analyze Resume'}
+            </Button>
 
-        {resumesLoading ? (
-          <p>Loading resumes...</p>
-        ) : resumes.length === 0 && !resumesError ? (
-          <p>
-            No resumes uploaded. <Link to="/resumes">Upload a resume</Link>{' '}
-            before running an analysis.
-          </p>
-        ) : null}
-
-        {resumesError && <p role="alert">{resumesError}</p>}
-        {analysisError && <p role="alert">{analysisError}</p>}
-
-        <button
-          type="submit"
-          disabled={
-            analyzing ||
-            !selectedApplicationId ||
-            !selectedResumeId ||
-            resumesLoading
-          }
-        >
-          {analyzing ? 'Analyzing...' : 'Analyze Resume'}
-        </button>
-      </form>
+            {(resumesError || analysisError) && (
+              <Alert variant="destructive" className="md:col-span-3">
+                <AlertDescription>
+                  {analysisError || resumesError}
+                </AlertDescription>
+              </Alert>
+            )}
+          </form>
+        </CardContent>
+      </Card>
 
       <AIAnalysisResult analysis={currentAnalysis} />
 
@@ -300,6 +358,7 @@ function AIAnalysisPanel({ applications, applicationsLoading }) {
           error={historyError}
           resumes={resumes}
           viewingId={viewingId}
+          selectedId={currentAnalysis?.id ?? null}
           onView={handleView}
         />
       )}
