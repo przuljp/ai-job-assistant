@@ -49,7 +49,7 @@ Job applications and resumes are always scoped to the authenticated user.
 
 Cross-user access to protected resources should return `404 Not Found` rather than exposing whether another user's resource exists.
 
-The frontend has a React foundation built with Vite and JavaScript. It includes registration and login flows, centralized authentication state, authenticated Axios requests, protected routes, logout, a user-scoped Dashboard, and Job Application CRUD UI. Other feature UI is not implemented yet.
+The frontend has a React foundation built with Vite and JavaScript. It includes registration and login flows, centralized authentication state, authenticated Axios requests, protected routes, logout, a user-scoped Dashboard, Job Application CRUD UI, Resume Management UI, and Resume-to-Job AI Analysis UI with history. Other feature UI is not implemented yet.
 
 The first AI analysis feature is implemented using OpenAI Structured Outputs.
 
@@ -980,7 +980,7 @@ The registration page posts the backend's required user fields to `/users/regist
 
 The login page posts JSON credentials to `/users/login`, passes the returned JWT to `AuthContext`, and redirects to `/dashboard`. The context persists the token under the `access_token` local-storage key. The shared Axios client adds the bearer token to requests, and a response interceptor clears invalid authentication after a `401` response. Dashboard, Applications, and Resumes routes use a shared protected-route guard.
 
-The Dashboard fetches the authenticated user's aggregate data from `GET /dashboard` and renders application statistics and recent applications. The Applications page supports listing, creating, editing, and deleting the authenticated user's Job Applications through the existing ownership-scoped API. Dashboard, Applications, and Resumes share a minimal authenticated navigation component. Resumes remains a routing placeholder.
+The Dashboard fetches the authenticated user's aggregate data from `GET /dashboard` and renders application statistics and recent applications. The Applications page supports listing, creating, editing, and deleting the authenticated user's Job Applications through the existing ownership-scoped API. It also supports selecting an application and resume, triggering the existing structured AI analysis, and viewing analysis history without rerunning the model. The Resumes page supports authenticated PDF upload, listing, and deletion. Dashboard, Applications, and Resumes share a minimal authenticated navigation component.
 
 Local storage is acceptable for this MVP, but its tokens are accessible to JavaScript and therefore exposed if an XSS vulnerability exists. Some production applications instead use secure HttpOnly cookies as part of a broader CSRF-aware authentication design.
 
@@ -997,7 +997,6 @@ The future frontend will likely include:
 - Dashboard
 - Job Application management
 - Resume management
-- AI analysis interface
 - Cover letter generation
 - Interview preparation
 

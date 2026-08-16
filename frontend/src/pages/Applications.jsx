@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import api from '../api/api.js'
+import AIAnalysisPanel from '../components/AIAnalysisPanel.jsx'
 import AppNav from '../components/AppNav.jsx'
 import ApplicationCard from '../components/ApplicationCard.jsx'
 
@@ -324,6 +325,11 @@ function Applications() {
           ))
         )}
       </section>
+
+      <AIAnalysisPanel
+        applications={applications}
+        applicationsLoading={loading}
+      />
     </main>
   )
 }
